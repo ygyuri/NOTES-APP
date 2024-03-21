@@ -1,0 +1,76 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * This method creates the necessary database tables and defines their structure.
+     */
+    public function up(): void
+    {
+        // Create the 'users' table
+        Schema::create('users', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
+            $table->rememberToken();
+            $table->foreignId('current_team_id')->nullable();
+            $table->string('profile_photo_path', 2048)->nullable();
+
+            // Additional fields for user profile
+            $table->text('bio')->nullable()->comment('Allow users to provide a short bio or description about themselves.');
+            $table->string('location')->nullable()->comment('Allow users to specify their location.');
+            $table->json('preferences')->nullable()->comment('Allow users to set preferences for their account.');
+            $table->json('social_media_links')->nullable()->comment('Allow users to include links to their social media profiles (Instagram, Twitter, Facebook, and TikTok).');
+            $table->string('contact')->nullable()->comment('Allow users to provide additional contact information such as phone number or secondary email address.');
+            $table->string('permissions')->nullable()->comment('Implement a roles and permissions system to manage user roles and access levels within your application.');
+            $table->boolean('email_verified')->default(false)->comment('Keep track of whether the user\'s email address has been verified.');
+
+            $table->timestamps(); // Timestamps for record creation and updates
+        });
+
+        // Create the 'password_reset_tokens' table
+        Schema::create('password_reset_tokens', function (Blueprint $table) {
+            $table->string('email')->primary();
+            $table->string('token');
+            $table->timestamp('created_at')->nullable();
+        });
+
+        // Create the 'sessions' table
+        Schema::create('sessions', function (Blueprint $table) {
+            $table->string('id')->primary();
+            $table->foreignId('user_id')->nullable()->index();
+            $table->string('ip_address', 45)->nullable();
+            $table->text('user_agent')->nullable();
+            $table->longText('payload');
+            $table->integer('last_activity')->index();
+        });
+
+
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * This method drops the database tables created in the 'up()' method.
+     */
+    public function down(): void
+    {
+        
+        // Drop the 'users' table
+        Schema::dropIfExists('users');
+
+        // Drop the 'password_reset_tokens' table
+        Schema::dropIfExists('password_reset_tokens');
+
+        // Drop the 'sessions' table
+        Schema::dropIfExists('sessions');
+    }
+};
