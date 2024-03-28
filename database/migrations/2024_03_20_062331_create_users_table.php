@@ -63,7 +63,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        
+
         // Drop the 'users' table
         Schema::dropIfExists('users');
 

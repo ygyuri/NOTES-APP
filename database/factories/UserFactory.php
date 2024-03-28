@@ -9,15 +9,14 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Laravel\Jetstream\Features;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
- */
 class UserFactory extends Factory
 {
     /**
-     * The current password being used by the factory.
+     * The name of the factory's corresponding model.
+     *
+     * @var string
      */
-    protected static ?string $password;
+    protected $model = User::class;
 
     /**
      * Define the model's default state.
@@ -27,15 +26,27 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
+            'name' => $this->faker->name(),
+            'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
+            'password' => Hash::make('password'),
             'two_factor_secret' => null,
             'two_factor_recovery_codes' => null,
             'remember_token' => Str::random(10),
             'profile_photo_path' => null,
             'current_team_id' => null,
+            'bio' => $this->faker->paragraph(),
+            'location' => $this->faker->city(),
+            'preferences' => json_encode(['theme' => 'dark', 'notifications' => true]),
+            'social_media_links' => json_encode([
+                'instagram' => 'https://instagram.com/example',
+                'twitter' => 'https://twitter.com/example',
+                'facebook' => 'https://facebook.com/example',
+                'tiktok' => 'https://tiktok.com/@example',
+            ]),
+            'contact' => $this->faker->phoneNumber(),
+            'permissions' => null,
+            'email_verified' => true, // Since email is verified by default
         ];
     }
 

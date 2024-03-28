@@ -29,13 +29,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
-        'bio', // Additional field: short bio or description about the user
-        'location', // Additional field: user's location
-        'preferences', // Additional field: user's preferences stored as JSON
-        'social_media_links', // Additional field: social media links stored as JSON
-        'contact', // Additional field: additional contact information
-        'permissions', // Additional field: roles and permissions system
-        'email_verified', // Additional field: track email verification status
     ];
 
     /**
@@ -66,9 +59,6 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'preferences' => 'array', // Casting preferences field to array
-        'social_media_links' => 'array', // Casting social media links field to array
-        'email_verified' => 'boolean', // Casting email_verified field to boolean
     ];
 
     /**
@@ -79,15 +69,5 @@ class User extends Authenticatable implements MustVerifyEmail
     public function notes()
     {
         return $this->hasMany(Note::class);
-    }
-
-    /**
-     * Get the notes collaborated by the user.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function collaboratedNotes()
-    {
-        return $this->belongsToMany(Note::class)->withTimestamps();
     }
 }
