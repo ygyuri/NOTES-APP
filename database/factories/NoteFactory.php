@@ -22,10 +22,7 @@ class NoteFactory extends Factory
     public function definition()
     {
         return [
-            'user_id' => function () {
-                // Generate a random user ID (assuming you have a User model)
-                return \App\Models\User::factory()->create()->id;
-            },
+            'user_id' =>  \App\Models\User::factory(),
             'title' => $this->faker->sentence(),
             'content' => $this->faker->paragraph(),
         ];

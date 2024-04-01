@@ -30,24 +30,7 @@ class UserFactory extends Factory
             'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => Hash::make('password'),
-            'two_factor_secret' => null,
-            'two_factor_recovery_codes' => null,
-            'remember_token' => Str::random(10),
-            'profile_photo_path' => null,
-            'current_team_id' => null,
-            'bio' => $this->faker->paragraph(),
-            'location' => $this->faker->city(),
-            'preferences' => json_encode(['theme' => 'dark', 'notifications' => true]),
-            'social_media_links' => json_encode([
-                'instagram' => 'https://instagram.com/example',
-                'twitter' => 'https://twitter.com/example',
-                'facebook' => 'https://facebook.com/example',
-                'tiktok' => 'https://tiktok.com/@example',
-            ]),
-            'contact' => $this->faker->phoneNumber(),
-            'permissions' => null,
-            'email_verified' => true, // Since email is verified by default
-        ];
+            'remember_token' => Str::random(10),];
     }
 
     /**
@@ -60,24 +43,5 @@ class UserFactory extends Factory
         ]);
     }
 
-    /**
-     * Indicate that the user should have a personal team.
-     */
-    public function withPersonalTeam(callable $callback = null): static
-    {
-        if (! Features::hasTeamFeatures()) {
-            return $this->state([]);
-        }
 
-        return $this->has(
-            Team::factory()
-                ->state(fn (array $attributes, User $user) => [
-                    'name' => $user->name.'\'s Team',
-                    'user_id' => $user->id,
-                    'personal_team' => true,
-                ])
-                ->when(is_callable($callback), $callback),
-            'ownedTeams'
-        );
-    }
 }
