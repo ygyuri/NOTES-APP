@@ -3,49 +3,159 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Models\Note;
+use App\Models\User;
+use Illuminate\Support\Str;
 
 class NoteController extends Controller
 {
     // Create a new note
     public function store(Request $request)
     {
-        $request->validate(['title' => 'required', 'content' => 'required']); // Validate request data
+        // Sanitize input
+        $validatedData = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+        ]);
 
-        $note = Note::create(['user_id' => auth()->user()->id, 'title' => $request->title, 'content' => $request->content]); // Create note
+        // Additional validation if needed
+        // Example: Ensure unique title
+        $existingNote = Note::where('title', $validatedData['title'])->first();
+        if ($existingNote) {
+            return response()->json(['error' => 'Note with this title already exists.'], 400);
+        }
 
-        return response()->json($note, 201); // Return created note
+        // Database transaction to ensure data consistency
+        try {
+            DB::beginTransaction();
+
+            // Create note
+            $note = Note::create([
+                'user_id' => auth()->user()->id,
+                'title' => $validatedData['title'],
+                'content' => $validatedData['content']
+            ]);
+
+            // Commit transaction
+            DB::commit();
+
+            // Return success response
+            return response()->json($note, 201);
+        } catch (\Exception $e) {
+            // Rollback transaction on error
+            DB::rollBack();
+
+            // Log error
+            \Log::error('Error creating note: ' . $e->getMessage());
+
+            // Return error response
+            return response()->json(['error' => 'Failed to create note. Please try again.'], 500);
+        }
     }
 
     // Get all notes
     public function index()
     {
-        $notes = Note::with('creator')->get(); // Retrieve all notes with creator relationship
+        try {
+            // Retrieve all notes with creator relationship
+            $notes = Note::with('creator')->get();
 
-        return response()->json($notes); // Return retrieved notes
+            // Return retrieved notes
+            return response()->json($notes);
+        } catch (\Exception $e) {
+            // Log error
+            \Log::error('Error fetching notes: ' . $e->getMessage());
+
+            // Return error response
+            return response()->json(['error' => 'Failed to fetch notes. Please try again.'], 500);
+        }
     }
 
     // Get a single note
     public function show(Note $note)
     {
-        return response()->json($note); // Return requested note
+        try {
+            // Check if the note exists
+            if (!$note) {
+                return response()->json(['error' => 'Note not found.'], 404);
+            }
+
+            // Return requested note
+            return response()->json($note);
+        } catch (\Exception $e) {
+            // Log error
+            \Log::error('Error fetching note: ' . $e->getMessage());
+
+            // Return error response
+            return response()->json(['error' => 'Failed to fetch note. Please try again.'], 500);
+        }
     }
 
     // Update a note
     public function update(Request $request, Note $note)
     {
-        $request->validate(['title' => 'required', 'content' => 'required']); // Validate request data
+        try {
+            // Start a database transaction
+            DB::beginTransaction();
 
-        $note->update(['title' => $request->title, 'content' => $request->content]); // Update note
+            // Validate request data
+            $validatedData = $request->validate([
+                'title' => 'required|string|max:255',
+                'content' => 'required|string',
+            ]);
 
-        return response()->json($note); // Return updated note
+            // Sanitize input data
+            $validatedData['title'] = trim($validatedData['title']);
+            $validatedData['content'] = trim($validatedData['content']);
+
+            // Update note
+            $note->update([
+                'title' => $validatedData['title'],
+                'content' => $validatedData['content']
+            ]);
+
+            // Commit the transaction
+            DB::commit();
+
+            // Return updated note
+            return response()->json($note);
+        } catch (\Exception $e) {
+            // Rollback the transaction on error
+            DB::rollBack();
+
+            // Log error
+            \Log::error('Error updating note: ' . $e->getMessage());
+
+            // Return error response
+            return response()->json(['error' => 'Failed to update note. Please try again.'], 500);
+        }
     }
 
     // Delete a note
     public function destroy(Note $note)
     {
-        $note->delete(); // Delete note
+        try {
+            // Start a database transaction
+            DB::beginTransaction();
 
-        return response()->json(null, 204); // Return null response
+            // Delete note
+            $note->delete();
+
+            // Commit the transaction
+            DB::commit();
+
+            // Return null response with status code 204 (No Content)
+            return response()->json(null, 204);
+        } catch (\Exception $e) {
+            // Rollback the transaction on error
+            DB::rollBack();
+
+            // Log error
+            \Log::error('Error deleting note: ' . $e->getMessage());
+
+            // Return error response
+            return response()->json(['error' => 'Failed to delete note. Please try again.'], 500);
+        }
     }
 }
