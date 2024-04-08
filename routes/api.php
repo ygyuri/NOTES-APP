@@ -1,9 +1,11 @@
 <?php
 
-use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\NoteController;
+
+// Use controllers with full namespaces
+use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\API\NoteController; // Assuming NoteController is also in API subdirectory
 
 // Routes for user registration and authentication
 Route::post('/register', [UserController::class, 'register']); // Register a new user
@@ -16,7 +18,7 @@ Route::get('/user', function (Request $request) {
 
 // Secure CRUD routes for managing notes with Sanctum authentication middleware
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/notes', [NoteController::class, 'store']); // Create a new note
+    Route::post('/createNotes', [NoteController::class, 'store']); // Create a new note
     Route::get('/notes', [NoteController::class, 'index']); // Get all notes
     Route::get('/notes/{id}', [NoteController::class, 'show']); // Get a single note by ID
     Route::post('/notes/{id}', [NoteController::class, 'update']); // Update a note by ID

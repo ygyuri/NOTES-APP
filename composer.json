@@ -10,7 +10,10 @@
         "laravel/jetstream": "^5.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
-        "livewire/livewire": "^3.0"
+        "livewire/livewire": "^3.0",
+        "laravel/passport": "^12.0"
+
+        
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -20,6 +23,7 @@
         "nunomaduro/collision": "^8.0",
         "phpunit/phpunit": "^10.5",
         "spatie/laravel-ignition": "^2.4"
+        
     },
     "autoload": {
         "psr-4": {
