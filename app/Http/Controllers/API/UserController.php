@@ -56,10 +56,14 @@ class UserController extends Controller
             $user = Auth::user();
             $token = $user->createToken('API Token')->plainTextToken;
 
-            return response()->json(['token' => $token], 200);
+            return response()->json([
+                'user_id' => $user->id,
+                'token' => $token
+            ], 200);
         } else {
             // Authentication failed
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-    }
+}
+
 }
