@@ -144,7 +144,7 @@ class Builder
     {
         $table = $this->connection->getTablePrefix().$table;
 
-        foreach ($this->getTables() as $value) {
+        foreach ($this->getTables(false) as $value) {
             if (strtolower($table) === strtolower($value['name'])) {
                 return true;
             }
@@ -293,7 +293,7 @@ class Builder
         $columns = $this->getColumns($table);
 
         foreach ($columns as $value) {
-            if (strtolower($value['name']) === $column) {
+            if (strtolower($value['name']) === strtolower($column)) {
                 return $fullDefinition ? $value['type'] : $value['type_name'];
             }
         }
@@ -571,7 +571,7 @@ class Builder
      * @param  \Closure|null  $callback
      * @return \Illuminate\Database\Schema\Blueprint
      */
-    protected function createBlueprint($table, Closure $callback = null)
+    protected function createBlueprint($table, ?Closure $callback = null)
     {
         $prefix = $this->connection->getConfig('prefix_indexes')
                     ? $this->connection->getConfig('prefix')
