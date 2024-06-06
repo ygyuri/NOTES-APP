@@ -23,4 +23,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/notes/{id}', [NoteController::class, 'show']); // Get a single note by ID
     Route::post('/notes/{id}', [NoteController::class, 'update']); // Update a note by ID
     Route::post('/notes/{id}/delete', [NoteController::class, 'destroy']); // Delete a note by ID
+    Route::put('users/{userId}/notes/{noteId}', [NoteController::class, 'updateNoteByUser']);
+    Route::delete('users/{userId}/notes/{noteId}', [NoteController::class, 'deleteNoteByUser']);
+    Route::get('users/{userId}/notes', [NoteController::class, 'getNotesByUser']);
 });
